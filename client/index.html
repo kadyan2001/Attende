@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Taking System</title>
+<style>
+    #stopwatch {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Attendance Taking System</h1>
+
+<div id="stopwatch">00:00:00</div>
+<button onclick="startStopwatch()">Start</button>
+<button onclick="stopStopwatch()">Stop</button>
+
+<form id="attendanceForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required>
+    <button type="submit">Submit Attendance</button>
+</form>
+
+<script>
+    let stopwatchInterval;
+    let stopwatchTime = 0;
+
+    function startStopwatch() {
+        stopwatchInterval = setInterval(updateStopwatch, 1000);
+    }
+
+    function stopStopwatch() {
+        clearInterval(stopwatchInterval);
+    }
+
+    function updateStopwatch() {
+        stopwatchTime++;
+        const hours = Math.floor(stopwatchTime / 3600);
+        const minutes = Math.floor((stopwatchTime % 3600) / 60);
+        const seconds = stopwatchTime % 60;
+
+        document.getElementById('stopwatch').innerText = `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+    }
+
+    function padZero(num) {
+        return (num < 10 ? '0' : '') + num;
+    }
+
+    document.getElementById('attendanceForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const currentTime = new Date();
+        const currentHour = currentTime.getHours();
+        const currentMinute = currentTime.getMinutes();
+
+        if (currentHour < 9 || (currentHour === 9 && currentMinute <= 30)) {
+            alert('Attendance can be taken only until 9:30 AM.');
+        } else {
+            alert(`Attendance submitted for ${name} at ${padZero(currentHour)}:${padZero(currentMinute)}.`);
+        }
+    });
+</script>
+
+</body>
+</html>

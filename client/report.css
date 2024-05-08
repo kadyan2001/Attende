@@ -1,0 +1,71 @@
+/* Resetting default margin and padding */
+
+
+.main {
+    padding: 20px;
+    background-image: url(repo.jpg);
+    background-size: 100%;
+}
+
+.main-top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.main-top h1 {
+    margin-right: 10px;
+}
+
+.fa-database {
+    font-size: 24px;
+}
+
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+/* Style for labels */
+.filter-option label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+/* Style for input fields */
+.filter-option input[type="text" ],
+.filter-option input[type="date"]{
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 150px;
+    transition: border-color 0.3s ease;
+}
+
+/* Hover effect for input fields */
+.filter-option input[type="text"]:hover,
+.filter-option input[type="text"]:focus {
+    border-color: #666;
+}
+
+/* Style for apply button */
+.filter-option button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+
+/* Hover effect for apply button */
+.filter-option button:hover {
+    background-color: #45a049;
+}
+

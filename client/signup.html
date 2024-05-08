@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Sign Up</title>
+    <link rel="stylesheet" href="Signup.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Employee Sign Up</h1>
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="userId">User ID:</label>
+                <input type="text" id="userId" name="userId" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="team">Team:</label>
+                <input type="text" id="team" name="team" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+
+    <script>
+        // Function to handle form submission
+        document.getElementById('signupForm').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const userId = parseInt(document.getElementById('userId').value);
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            const team = document.getElementById('team').value;
+            const password = document.getElementById('password').value;
+
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }, body: JSON.stringify({ "user_id": userId, team, name, email, "password": password, "role": "admin" })
+            };
+            await fetch(`http://localhost:8080/api/auth/signup`, options)
+                .then(async (response) => {
+                    const responseInfo = await response.json()
+                    if (response.status === 200) {
+                        sessionStorage.setItem('token', responseInfo?.response?.token)
+                        window.location.href = "attendance.html"
+                    } else {
+                        alert(responseInfo.message)
+                    }
+                })
+                .catch(err => console.error(err));
+        });
+    </script>
+</body>
+
+</html>

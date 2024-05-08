@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <form id="attendanceForm">
+        <label for="studentName">Student Name:</label>
+        <input type="text" id="studentName" required>
+        <button type="submit">Take Attendance</button>
+    </form>
+    
+    <h2>Attendance List:</h2>
+    <ul id="attendanceList"></ul>
+    
+    <script>
+    document.getElementById("attendanceForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const studentName = document.getElementById("studentName").value;
+            if (studentName.trim() !== "") {
+                const listItem = document.createElement("li");
+                listItem.innerText = studentName;
+                document.getElementById("attendanceList").appendChild(listItem);
+                document.getElementById("studentName").value = "";
+            }
+        });
+    </script>
+    
+</body>
+</html>

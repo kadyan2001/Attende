@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script> -->
+</head>
+
+<body>
+
+  <div class="container">
+    <nav>
+      <ul>
+        <li>
+          <a href="#" class="logo">
+            <img src="./Images/logo.png">
+            <span id="profileName" class="nav-item">Admin</span>
+          </a>
+        </li>
+        <li><a href="attendance.html">
+            <i class="fas fa-menorah"></i>
+            <span class="nav-item">Dashboard</span>
+          </a></li>
+        <li><a href="report.html">
+            <i class="fas fa-database"></i>
+            <span class="nav-item">Report</span>
+          </a></li>
+        <li><a href="script.html">
+            <i class="fas fa-chart-bar"></i>
+            <span id="attendanceButton" class="nav-item">Attendance</span>
+          </a></li>
+        <li><a href="setting.html">
+            <i class="fas fa-cog"></i>
+            <span class="nav-item">Setting</span>
+          </a></li>
+        <li><button onclick="handleLogout()" class="logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="nav-item">Log out</span>
+            </>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="main">
+      <div class="main-top">
+        <h1>Dashboard</h1>
+        <!-- <i  class="fas fa-user-cog"></i> -->
+        <button onclick="handleSignup()" class="signup">Sign Up</button>
+        <!-- <a href="signup.html">Sign Up</a> -->
+
+      </div>
+
+      <div class="users">
+        <div class="card">
+          <img src="/Images/emp.png" alt="">
+          <h4>Mohit</h4>
+          <p>Application Team</p>
+          <div class="per">
+            <!-- <table>
+              <tr>
+                <td><span>80%</span></td>
+                <td><span>87%</span></td>
+              </tr>
+
+              <tr>
+                <td>Month</td>
+                <td>Year</td>
+              </tr>
+            </table> -->
+          </div>
+          <button>Profile</button>
+        </div>
+        <div class="card">
+          <img src="/Images/emp.png" alt="">
+          <h4>Parvesh</h4>
+          <p>Application Team</p>
+          <div class="per">
+            <!-- <table>
+              <tr>
+                <td><span>82%</span></td>
+                <td><span>85%</span></td>
+              </tr>
+
+              <tr>
+                <td>Month</td>
+                <td>Year</td>
+              </tr>
+            </table> -->
+          </div>
+          <button>Profile</button>
+        </div>
+
+        <div class="card">
+          <img src="/Images/emp.png" alt="">
+          <h4>Sunil</h4>
+          <p>Application Team</p>
+          <div class="per">
+            <!-- <table>
+              <tr>
+                <td><span>90%</span></td>
+                <td><span>89%</span></td>
+              </tr>
+
+              <tr>
+                <td>Month</td>
+                <td>Year</td>
+              </tr>
+            </table> -->
+          </div>
+          <button>Profile</button>
+        </div>
+
+        <div class="card">
+          <img src="/Images/emp.png" alt="">
+          <h4>Manish Kadyan</h4>
+          <p>Application Team</p>
+          <div class="per">
+            <!-- <table>
+              <tr>
+                <td><span>80%</span></td>
+                <td><span>89%</span></td>
+              </tr>
+
+              <tr>
+                <td>Month</td>
+                <td>Year</td>
+              </tr>
+            </table> -->
+          </div>
+          <button>Profile</button>
+        </div>
+      </div>
+
+      <section class="attendance">
+        <!-- <div class="attendance-list">
+          <h1>Attendance List</h1>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Depart</th>
+                <th>Date</th>
+                <th>Join Time</th>
+                <th>Logout Time</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>01</td>
+                <td>Mohit</td>
+                <td>Application</td>
+                <td>03-4-24</td>
+                <td>9:00AM</td>
+                <td>5:00PM</td>
+                <td><button>View</button></td>
+              </tr>
+              <tr class="active">
+                <td>02</td>
+                <td>Parvesh</td>
+                <td>Application</td>
+                <td>03-4-24</td>
+                <td>9:00AM</td>
+                <td>6:00PM</td>
+                <td><button>View</button></td>
+              </tr>
+              <tr>
+                <td>03</td>
+                <td>Sunil</td>
+                <td>Application</td>
+                <td>03-4-24</td>
+                <td>9:00AM</td>
+                <td>5:00PM</td>
+                <td><button>View</button></td>
+              </tr>
+              <tr>
+                <td>04</td>
+                <td>Manish</td>
+                <td>Design</td>
+                <td>03-24-22</td>
+                <td>10:00AM</td>
+                <td>5:30PM</td>
+                <td><button>View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div> -->
+      </section>
+    </section>
+  </div>
+
+
+  <script>
+    const handleLogout = async () => {
+      sessionStorage.removeItem('token')
+      window.location.href = "login.html"
+    }
+
+    const handleSignup = async () => {
+      sessionStorage.removeItem('token')
+      window.location.href = "signup.html"
+    }
+
+    (async () => {
+
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          token: sessionStorage.getItem('token')
+        }
+      };
+      await fetch(`http://localhost:8080/api/auth/get`, options)
+        .then(async (response) => {
+          const responseInfo = await response.json()
+          if (response.status === 200) {
+            sessionStorage.setItem('user_id', responseInfo?.user_id)
+            document.getElementById('profileName').innerText = responseInfo?.name
+          } else {
+            alert(responseInfo.message)
+          }
+        })
+        .catch(err => console.error(err));
+    })()
+  </script>
+</body>
+
+</html>
