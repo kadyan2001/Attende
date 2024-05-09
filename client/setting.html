@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Data Update</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    
+    <link rel="stylesheet" href="setting.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <nav>
+            <ul>
+              <li>
+                <a href="#" class="logo">
+                  <img src="./Images/logo.png">
+                  <span id="profileName" class="nav-item">Admin</span>
+                </a>
+              </li>
+              <li><a href="attendance.html">
+                  <i class="fas fa-menorah"></i>
+                  <span class="nav-item">Dashboard</span>
+                </a></li>
+              <li><a href="report.html">
+                  <i class="fas fa-database"></i>
+                  <span class="nav-item">Report</span>
+                </a></li>
+              <li><a href="script.html">
+                  <i class="fas fa-chart-bar"></i>
+                  <span id="attendanceButton" class="nav-item">Attendance</span>
+                </a></li>
+              <li><a href="setting.html">
+                  <i class="fas fa-cog"></i>
+                  <span class="nav-item">Setting</span>
+                </a></li>
+              <li><button onclick="handleLogout()" class="logout">
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span class="nav-item">Log out</span>
+                  </>
+              </li>
+            </ul>
+          </nav>
+    
+        <section class="updation">
+    
+            <h1>Employee Data Update</h1>
+        <form id="updateForm">
+            <label for="employeeId">Employee ID:</label>
+            <input type="text" id="employeeId" name="employeeId"><br><br>
+    
+            <label for="employeeName">Name:</label>
+            <input type="text" id="employeeName" name="employeeName"><br><br>
+    
+            <label for="employeeEmail">Email:</label>
+            <input type="text" id="employeeEmail" name="employeeEmail"><br><br>
+    
+            <label for="employeeTeam">Team:</label>
+            <input type="text" id="employeeTeam" name="employeeTeam"><br><br>
+    
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password"><br><br>
+    
+            <button type="submit">Update Data</button>
+        </form>
+    
+        </section>
+    </div>
+
+   
+    
+
+    <script>
+        // Function to handle form submission
+        document.getElementById("updateForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Get values from form inputs
+            var employeeId = document.getElementById("employeeId").value;
+            var employeeName = document.getElementById("employeeName").value;
+            var employeeTeam = document.getElementById("employeeTeam").value;
+            var employeeEmail = document.getElementById("employeeEmail").value;
+            var password = document.getElementById("password").value;
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }, body: JSON.stringify({ "user_id": employeeId, team: employeeTeam, name: employeeName, email: employeeEmail, "password": password, "role": "user" })
+            };
+            await fetch(`http://localhost:8080/api/auth/signup`, options)
+                .then(async (response) => {
+                    const responseInfo = await response.json()
+                    if (response.status === 200) {
+                        window.location.href = "attendance.html"
+                    } else {
+                        alert(responseInfo.message)
+                    }
+                })
+                .catch(err => console.error(err)); // Reset form inputs after submission
+            document.getElementById("updateForm").reset();
+        });
+
+    </script>
+</body>
+
+</html>

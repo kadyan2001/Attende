@@ -1,0 +1,68 @@
+/* SignUp.css */
+
+body {
+    font-family: Arial, sans-serif;
+    /* background-color: #f2f2f2; */
+    margin: 0;
+    padding: 0;
+    background-image: url(/client/Images/sign-up.jpg);
+    background-size: 50%;
+
+}
+
+.container {
+    max-width: 400px;
+    margin: 150px auto;
+    /* background-color: #e0e0e0; */
+    box-shadow: 0px 0px 20px rgb(255, 115, 0),0px 0px 20px  rgb(255, 115, 0);
+
+    background-color: #000000;
+    padding: 20px;
+    border-radius: 8px;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: orange;
+
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    color: whitesmoke;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button[type="submit"] {
+    /* background-color: #4caf50; */
+    background-color: gold;
+    /* color: #fff; */
+    color: #000000;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+    background-color: orange;
+}
+
+/* Add additional styling as needed */

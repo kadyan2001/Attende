@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance System</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <!-- <link rel="stylesheet" href="script.css"> -->
+
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url(/client/Images/attende1.jpg);
+      background-size: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 2px solid #4e4c4c;
+      /* border: 3px solid #fff; */
+      /* color:aqua; */
+      font-weight: bolder;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #4c4c4c;
+      /* background-color: #fff; */
+    }
+  </style>
+</head>
+
+<body>
+  <section class="sec">
+    <h1>Attendance System</h1>
+
+    <button id="attendanceButton">Mark Attendance</button>
+
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Team</th>
+          <th>Status</th>
+          <th>In Time</th>
+          <th>Out Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Attendance data will be displayed here -->
+      </tbody>
+    </table>
+
+    <button id="downloadButton">
+      Download Attendance Sheet
+    </button>
+
+  </section>
+
+  <!-- <link rel="stylesheet" href="script.css"> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+  <script>
+
+    let attendanceArray;
+    (async () => {
+      const options = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: sessionStorage.getItem("token"),
+        },
+      };
+      await fetch(`http://localhost:8080/api/attendence/get-all`, options)
+        .then(async (response) => {
+          const responseInfo = await response.json();
+          if (response.status === 200) {
+            let temp = []
+            responseInfo.forEach((item) => {
+              const { user_id, name, team } = item?.user;
+              const utcDate = new Date(item?.createdAt)
+              const outTimeUTC = new Date(item?.out_time)
+              temp.push({ date: utcDate.toLocaleDateString(), user_id: user_id, name, team, status: item.status, inTime: convertTo12HourFormat(utcDate.toLocaleTimeString()), outTime: item.out_time === undefined ? "-" : convertTo12HourFormat(outTimeUTC.toLocaleTimeString()) })
+              const tableBody = document.querySelector('#attendanceTable tbody');
+              const row = document.createElement('tr');
+              row.innerHTML = `
+              <td>${utcDate.toLocaleDateString()}</td>
+              <td>${user_id}</td>
+              <td>${name}</td>
+              <td>${capitalizeFirstLetter(team)}</td>
+              <td>${capitalizeFirstLetter(item?.status)}</td>
+              <td>${item?.status === "absent" ? "-" : convertTo12HourFormat(utcDate.toLocaleTimeString())}</td>
+              <td>${item.out_time === undefined ? "-" : convertTo12HourFormat(outTimeUTC.toLocaleTimeString())}</td>
+            `;
+              tableBody.appendChild(row);
+            })
+            attendanceArray = temp;
+          } else {
+            alert(responseInfo.message);
+          }
+        })
+        .catch((err) => console.error(err));
+    })();
+
+    function convertTo12HourFormat(time24h) {
+      const [hours, minutes, seconds] = time24h.split(":");
+      let period = "AM";
+      let hours12 = parseInt(hours, 10);
+      if (hours12 > 12) {
+        hours12 -= 12;
+        period = "PM";
+      }
+      return `${hours12}:${minutes}:${seconds} ${period}`;
+    }
+
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    async function takeAttendance() {
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: sessionStorage.getItem("token"),
+        },
+        body: JSON.stringify({ user_id: sessionStorage.getItem("user_id"), status: "present" }),
+      };
+      await fetch(`http://localhost:8080/api/attendence/add`, options)
+        .then(async (response) => {
+          const responseInfo = await response.json();
+          const utcDate = new Date(responseInfo?.createdAt);
+          const outTimeUTC = new Date(responseInfo?.out_time);
+          if (response.status === 201) {
+            window.location.reload();
+          } else {
+            alert(responseInfo.message);
+          }
+        })
+        .catch((err) => console.error(err));
+    }
+
+    function updateAttendanceTable() {
+      const tableBody = document.querySelector("#attendanceTable tbody");
+      tableBody.innerHTML = ""; // Clear previous data
+
+      attendanceData.forEach((record) => {
+        record.present.forEach((employee) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${record.date}</td>
+            <td>${employee.id}</td>
+            <td>${employee.name}</td>
+            <td>${employee.team}</td>
+            <td>Present</td>
+            <td>${employee.inTime}</td>
+            <td>${employee.outTime}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+
+        record.absent.forEach((employee) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${record.date}</td>
+            <td>${employee.id}</td>
+            <td>${employee.name}</td>
+            <td>${employee.team}</td>
+            <td>Absent</td>
+            <td></td>
+            <td></td>
+          `;
+          tableBody.appendChild(row);
+        });
+      });
+    }
+
+    function generateExcelReport() {
+      const workbook = XLSX.utils.book_new();
+      const allData = attendanceArray.map(record => [
+        record.date,
+        record.user_id,
+        record.name,
+        record.team,
+        record.status,
+        record.inTime,
+        record.outTime
+      ]);
+      const worksheet = XLSX.utils.aoa_to_sheet([['Date', 'ID', 'Name', 'Team', 'Status', 'In Time', 'Out Time'], ...allData]);
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance Report');
+      XLSX.writeFile(workbook, 'attendance_report.xlsx');
+    }
+
+    // Attach click event listener to the attendance button
+    document
+      .getElementById("attendanceButton")
+      .addEventListener("click", takeAttendance);
+
+    // Attach click event listener to the download button
+    document.getElementById('downloadButton').addEventListener('click', generateExcelReport);
+  </script>
+
+</body>
+
+</html>
