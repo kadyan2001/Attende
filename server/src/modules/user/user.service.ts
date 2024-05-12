@@ -7,7 +7,7 @@ import { SignupDto } from '../auth/dto/signup.dto';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('users') private readonly userModel: Model<User>) { }
+  constructor(@InjectModel('users') private readonly userModel: Model<User>) {}
 
   async findByUserId(identifier: string) {
     const user = await this.userModel
@@ -37,5 +37,12 @@ export class UserService {
       .findOneAndUpdate({ _id }, userWithHashedPassword, { new: true })
       .lean()
       .exec();
+  }
+
+  async getProfiles(_id?: string) {
+    if (!_id) {
+      return this.userModel.find().lean().exec();
+    }
+    return this.userModel.find({ _id }).lean().exec();
   }
 }

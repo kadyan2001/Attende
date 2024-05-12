@@ -19,7 +19,7 @@ import { Role } from './interface/user.interface';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('login')
   async login(@Res() res, @Body() authenticateDto: AuthenticateDto) {
@@ -65,5 +65,16 @@ export class AuthController {
   @Get('get')
   getProfile(@Req() req: any, @Res() res) {
     return res.status(HttpStatus.OK).json(req.user);
+  }
+
+  @Roles(Role.Admin, Role.User)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('get-profiles')
+  getProfiles(@Req() req: any) {
+    if (req.user.role !== 'admin') {
+      return this.authService.getProfiles(req.user._id);
+    } else {
+      return this.authService.getProfiles();
+    }
   }
 }

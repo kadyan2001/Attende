@@ -82,4 +82,8 @@ export class AuthService {
     const token = await this.jwtService.signAsync({ ...restUser });
     return { token, user: restUser };
   }
+
+  getProfiles(_id?: string) {
+    return this.userService.getProfiles(_id);
+  }
 }
