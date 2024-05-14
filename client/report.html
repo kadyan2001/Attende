@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Employee Attendance Report</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <link rel="stylesheet" href="report.css">
+    <link rel="stylesheet" href="report.css" />
 </head>
+
 <body>
     <div class="container">
         <nav>
             <ul>
                 <li>
                     <a href="#" class="logo">
-                        <img src="./Images/logo.png">
+                        <img src="./Images/logo.png" alt="Logo" />
                         <span id="profileName" class="nav-item">Admin</span>
                     </a>
                 </li>
@@ -30,22 +32,24 @@
                         <span class="nav-item">Report</span>
                     </a>
                 </li>
-                <li><a href="attendance.html">
-                    <i class="fas fa-chart-bar"></i>
-                    <span id="attendanceButton" class="nav-item">Attendance</span>
-                </a></li>
-                <li><a href="setting.html">
-                    <i class="fas fa-cog"></i>
-                    <span class="nav-item">Setting</span>
-                </a></li>
+                <li>
+                    <a href="attendance.html">
+                        <i class="fas fa-chart-bar"></i>
+                        <span id="attendanceButton" class="nav-item">Attendance</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="setting.html">
+                        <i class="fas fa-cog"></i>
+                        <span class="nav-item">Setting</span>
+                    </a>
+                </li>
                 <li>
                     <button onclick="handleLogout()" class="logout">
                         <i class="fas fa-sign-out-alt"></i>
                         <span class="nav-item">Log out</span>
                     </button>
                 </li>
-                <!-- Filter options -->
-               
             </ul>
         </nav>
         <section class="main">
@@ -55,30 +59,109 @@
             </div>
             <ul>
                 <div class="filter-option">
-                    <label for="monthFilter">Month:</label>
-                    <select id="monthFilter" name="monthFilter">
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                        <!-- Add options for other months -->
-                    </select>
-                
-                
                     <label for="dateFilter">Date:</label>
-                    <input type="date" id="dateFilter" name="dateFilter">
-                
-               
-                    <label for="employeeNameFilter">Name:</label>
-                    <input type="text" id="employeeNameFilter" name="employeeNameFilter">
-                
-               
+                    <input type="date" id="dateFilter" name="dateFilter" />
+                    <label for="employeeIdFilter">Id:</label>
+                    <input type="text" id="employeeNameFilter" name="employeeNameFilter" />
                     <button class="btn" onclick="applyFilter()">Apply</button>
-            </div>
-           
-            <!-- Rest of your content -->
+                </div>
+                <table id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Team</th>
+                            <th>Status</th>
+                            <th>In Time</th>
+                            <th>Out Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </ul>
         </section>
     </div>
     <script>
-        // Your JavaScript code here
+        async function applyFilter() {
+            const date = document.getElementById("dateFilter").value;
+            const employeeId = document.getElementById("employeeNameFilter").value;
+            const options = {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    token: sessionStorage.getItem("token"),
+                },
+            };
+            await fetch(
+                `http://localhost:8080/api/attendence/get-with-date?date=${date}&employeeId=${employeeId}`,
+                options
+            )
+                .then(async (response) => {
+                    const responseInfo = await response.json();
+                    debugger;
+                    if (response.status === 200) {
+                        let temp = [];
+                        responseInfo.forEach((item) => {
+                            const { user_id, name, team } = item?.user;
+                            const utcDate = new Date(item?.createdAt);
+                            const outTimeUTC = new Date(item?.out_time);
+                            temp.push({
+                                date: utcDate.toLocaleDateString(),
+                                user_id: user_id,
+                                name,
+                                team,
+                                status: item.status,
+                                inTime: convertTo12HourFormat(utcDate.toLocaleTimeString()),
+                                outTime:
+                                    item.out_time === undefined
+                                        ? "-"
+                                        : convertTo12HourFormat(outTimeUTC.toLocaleTimeString()),
+                            });
+                            const tableBody = document.querySelector(
+                                "#attendanceTable tbody"
+                            );
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+              <td>${utcDate.toLocaleDateString()}</td>
+              <td>${user_id}</td>
+              <td>${name}</td>
+              <td>${capitalizeFirstLetter(team)}</td>
+              <td>${capitalizeFirstLetter(item?.status)}</td>
+              <td>${item?.status === "absent"
+                                    ? "-"
+                                    : convertTo12HourFormat(utcDate.toLocaleTimeString())
+                                }</td>
+              <td>${item.out_time === undefined
+                                    ? "-"
+                                    : convertTo12HourFormat(outTimeUTC.toLocaleTimeString())
+                                }</td>
+            `;
+                            tableBody.appendChild(row);
+                        });
+                    } else {
+                        alert(responseInfo.message);
+                    }
+                })
+                .catch((err) => console.error(err));
+        }
+
+        function convertTo12HourFormat(time24h) {
+            const [hours, minutes, seconds] = time24h.split(":");
+            let period = "AM";
+            let hours12 = parseInt(hours, 10);
+            if (hours12 > 12) {
+                hours12 -= 12;
+                period = "PM";
+            }
+            return `${hours12}:${minutes}:${seconds} ${period}`;
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
     </script>
 </body>
+
 </html>

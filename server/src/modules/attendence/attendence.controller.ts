@@ -17,4 +17,10 @@ export class AttendenceController {
   async getAttendences(@Req() req: any) {
     return this.attendenceService.getAttendences(req.user);
   }
+
+  @Get('get-with-date')
+  @UseGuards(JwtAuthGuard)
+  async getAttendencesWithDate(@Req() req: any) {
+    return this.attendenceService.getAttendancesWithDate(req.query);
+  }
 }

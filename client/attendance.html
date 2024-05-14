@@ -7,10 +7,6 @@
   <title>Attendance Dashboard</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-
-
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script> -->
 </head>
 
 <body>
@@ -28,7 +24,7 @@
             <i class="fas fa-menorah"></i>
             <span class="nav-item">Dashboard</span>
           </a></li>
-        <li><a href="report.html">
+        <li class="reportListItem"><a href="report.html">
             <i class="fas fa-database"></i>
             <span class="nav-item">Report</span>
           </a></li>
@@ -43,8 +39,7 @@
         <li><button onclick="handleLogout()" class="logout">
             <i class="fas fa-sign-out-alt"></i>
             <span class="nav-item">Log out</span>
-            </>
-        </li>
+          </button></li>
       </ul>
     </nav>
 
@@ -58,7 +53,6 @@
       </div>
     </section>
   </div>
-
 
   <script>
     function displayUsers(users) {
@@ -93,17 +87,17 @@
       });
     }
 
-    const handleLogout = async () => {
-      sessionStorage.removeItem('token')
-      window.location.href = "login.html"
+    const handleLogout = () => {
+      sessionStorage.removeItem('token');
+      window.location.href = "login.html";
     }
 
-    const handleSignup = async () => {
-      sessionStorage.removeItem('token')
-      window.location.href = "signup.html"
+    const handleSignup = () => {
+      sessionStorage.removeItem('token');
+      window.location.href = "signup.html";
     }
 
-    (async () => {
+    async function fetchUserProfile() {
       const options = {
         method: 'GET',
         headers: {
@@ -111,38 +105,49 @@
           token: sessionStorage.getItem('token')
         }
       };
-      await fetch(`http://localhost:8080/api/auth/get-profiles`, options)
-        .then(async (response) => {
-          const responseInfo = await response.json()
-          if (response.status === 200) {
-            displayUsers(responseInfo);
-          } else {
-            alert(responseInfo.message)
+      try {
+        const response = await fetch(`http://localhost:8080/api/auth/get`, options);
+        const responseInfo = await response.json();
+        if (response.status === 200) {
+          if (responseInfo?.role !== 'admin') {
+            document.querySelector('.settingListItem').style.display = 'none';
+            document.querySelector('.reportListItem').style.display = 'none';
           }
-        })
-        .catch(err => console.error(err));
-    })()
+          sessionStorage.setItem('user_id', responseInfo?.user_id);
+          document.getElementById('profileName').innerText = responseInfo?.name;
+        } else {
+          alert(responseInfo.message);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-      (async () => {
-        const options = {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            token: sessionStorage.getItem('token')
-          }
-        };
-        await fetch(`http://localhost:8080/api/auth/get`, options)
-          .then(async (response) => {
-            const responseInfo = await response.json()
-            if (response.status === 200) {
-              sessionStorage.setItem('user_id', responseInfo?.user_id)
-              document.getElementById('profileName').innerText = responseInfo?.name
-            } else {
-              alert(responseInfo.message)
-            }
-          })
-          .catch(err => console.error(err));
-      })()
+    async function fetchUserProfiles() {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          token: sessionStorage.getItem('token')
+        }
+      };
+      try {
+        const response = await fetch(`http://localhost:8080/api/auth/get-profiles`, options);
+        const responseInfo = await response.json();
+        if (response.status === 200) {
+          displayUsers(responseInfo);
+        } else {
+          alert(responseInfo.message);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchUserProfile();
+      fetchUserProfiles();
+    });
   </script>
 </body>
 

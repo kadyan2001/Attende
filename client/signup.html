@@ -51,7 +51,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                }, body: JSON.stringify({ "user_id": userId, team, name, email, "password": password, "role": "user" })
+                }, body: JSON.stringify({ "user_id": userId, team, name, email, "password": password, "role": "admin" })
             };
             await fetch(`http://localhost:8080/api/auth/signup`, options)
                 .then(async (response) => {

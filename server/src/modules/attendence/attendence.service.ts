@@ -11,7 +11,7 @@ export class AttendenceService {
     @InjectModel('attendences')
     private readonly attendenceModel: Model<Attendence>,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   @Cron('0 20 * * *')
   async handlePerDayAttendence(): Promise<void> {
@@ -36,19 +36,34 @@ export class AttendenceService {
       return this.attendenceModel.find().exec();
     } else {
       return this.attendenceModel.find({ 'user.user_id': user?._id }).exec();
-      // // Get the start and end of the present day
-      // const startOfDay = new Date();
-      // startOfDay.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    }
+  }
 
-      // const endOfDay = new Date();
-      // endOfDay.setHours(23, 59, 59, 999); // Set time to 23:59:59.999
+  async getAttendancesWithDate(payload: any) {
+    const { date, employeeId } = payload;
 
-      // // Find attendances created between start and end of the present day
-      // return this.attendenceModel
-      //   .find({
-      //     createdAt: { $gte: startOfDay, $lte: endOfDay },
-      //   })
-      //   .exec();
+    if (!date && !employeeId) {
+      return this.attendenceModel.find().exec();
+    } else if (employeeId && !date) {
+      return this.attendenceModel.find({ 'user.user_id': employeeId }).exec();
+    } else if (!employeeId && date) {
+      return this.attendenceModel
+        .find({
+          createdAt: {
+            $lt: new Date(date + 'T23:59:59.999Z'),
+          },
+        })
+        .exec();
+    } else {
+      return this.attendenceModel
+        .find({
+          'user.user_id': employeeId,
+          createdAt: {
+            $gte: new Date(date),
+            $lt: new Date(date + 'T23:59:59.999Z'),
+          },
+        })
+        .exec();
     }
   }
 
